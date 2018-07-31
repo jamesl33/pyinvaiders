@@ -7,7 +7,7 @@ Supported Python version: 3.5.2+
 
 import pygame
 
-from constants import DISPLAY
+from constants import DISPLAY, TANK
 from sprite_sheet import SpriteSheet
 from tank_bullet import TankBullet
 
@@ -27,7 +27,7 @@ class Tank(pygame.sprite.DirtySprite):
         seconds_elapsed (float): Seconds since the last frame was drawn.
         velocity (pygame.Vector2): Movement velocities.
     """
-    image = SpriteSheet().load_sprite(pygame.Rect(0, 48, 52, 32))
+    image = SpriteSheet().load_sprite(TANK)
 
     def __init__(self, *groups):
         super().__init__(*groups)

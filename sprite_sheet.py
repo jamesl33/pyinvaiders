@@ -5,7 +5,6 @@ Email: jamesl33info@gmail.com
 Supported Python version: 3.5.2+
 """
 
-
 import pygame
 
 
