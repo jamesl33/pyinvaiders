@@ -8,54 +8,42 @@ Supported Python version: 3.5.2+
 import pygame
 
 from constants import DISPLAY, TANK
+from sprite import Sprite
 from sprite_sheet import SpriteSheet
 from tank_bullet import TankBullet
 
 
-class Tank(pygame.sprite.DirtySprite):
-    """Tank sprite which the user control to destroy the oncoming alien horde.
+class Tank(Sprite):
+    """The tank which the user controls to fight the alien horde.
 
     Arguments:
-        groups (pygame.Group): The groups this sprite will be added too.
+        groups (pygame.sprite.Group): All the groups this sprite will be in.
 
     Attributes:
-        current_time (float): Time since last operation took place.
-        dirty (int): Determine if the sprite should be redrawn or not.
-        reload_speed (float): How many seconds to wait before shooting.
-        image (pygame.Surface): The image which will represent the sprite.
-        rect (pygame.Rect): The rect for 'image'.
-        seconds_elapsed (float): Seconds since the last frame was drawn.
-        velocity (pygame.Vector2): Movement velocities.
+        current_time (int): Allow tank to fire from the start of the game.
+        image (pygame.Surface): The image representing the sprite.
+        rect (pygame.Rect): The rect for the image surface.
+        reload_speed (float): The amount of time to wait before fireing a shot.
+        velocity (pygame.math.Vector2): Movement velocity in the x, y axis.
     """
     image = SpriteSheet().load_sprite(TANK)
 
     def __init__(self, *groups):
         super().__init__(*groups)
         self.current_time = 1
-        self.dirty = 1
-        self.reload_speed = 0.5
         self.image = self.image.convert_alpha()
         self.rect = self.image.get_rect()
-        self.seconds_elapsed = 0
+        self.reload_speed = 0.5
         self.velocity = pygame.math.Vector2(250, 0)
 
         self.rect.x = DISPLAY.width / 2 - self.rect.width / 2
         self.rect.y = (DISPLAY.height - self.rect.height)
 
-    def update(self, seconds_elapsed):
-        """Update tanks time based variables.
-
-        Arguments:
-            seconds_elapsed (float): Seconds since the last frame was drawn.
-        """
-        self.current_time += seconds_elapsed
-        self.seconds_elapsed = seconds_elapsed
-
     def move(self, direction):
-        """Move the tank depending on the users input.
+        """Move the Tank sprite according to the direction.
 
         Arguments:
-            direction (int): left < 0 < right.
+            direction (int): The direction to move. left < 0 > right.
         """
         incriment = int(self.seconds_elapsed * self.velocity.x)
 
@@ -67,10 +55,10 @@ class Tank(pygame.sprite.DirtySprite):
             self.rect.x += incriment
 
     def shoot(self, *groups):
-        """Fire a shot from the tank's cannon if it has reload.
+        """Fire a bullet from the Tank's cannon.
 
         Arguments:
-            groups (pygame.Group): The groups this sprite will be added too.
+            groups (pygame.sprite.Group): The groups the bullet will be in.
         """
         if self.current_time >= self.reload_speed:
             TankBullet(self, *groups)

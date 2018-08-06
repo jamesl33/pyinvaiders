@@ -15,14 +15,15 @@ from tank import Tank
 
 
 class SpaceInvaiders():
-    """A clone of the classic Space Invaiders game.
+    """A clone of the classic Space Invaders game built using Python 3 and
+    pygame.
 
-    Atrributes:
-        background (pygame.Surface): The game's background.
-        clock (pygame.time.Clock): The clock used to limit frame rate.
-        display (pygame.display): The game's main display surface.
-        sprites (dict): Logically separated sprite groups.
-        tank (Tank): The tank which the player controls.
+    Attributes:
+        background (pygame.Surface): The background surface.
+        clock (pygame.time.Clock): The games clock.
+        display (pygame.display): The games main display.
+        sprites (dict {pygame.sprite.LayeredDirty}): All the games sprites.
+        tank (Tank): The tank that the user controls.
     """
     def __init__(self):
         self.background = pygame.Surface(DISPLAY.size)
@@ -37,14 +38,15 @@ class SpaceInvaiders():
         self.tank = None
 
     def start(self):
-        """Set the default values and start the game."""
-        self._restart()
+        """This function is called to start the game."""
+        self.restart()
 
         while True:
             self._update()
 
-    def _restart(self):
-        """Set all the values back to default."""
+    def restart(self):
+        """Restart the game resetting the games variables to their default
+        values."""
         for _, sprite_group in self.sprites.items():
             sprite_group.empty()
 
@@ -60,7 +62,7 @@ class SpaceInvaiders():
             Shield((pos_x, shield_height), shield_groups)
 
     def _update(self):
-        """Process a single everything that is needed to update a frame."""
+        """Progress the game by a single frame."""
         self._clear_sprites()
         self._update_sprites(self.clock.tick(FPS) / 1000)
         self._handle_input(pygame.key.get_pressed())
@@ -71,23 +73,18 @@ class SpaceInvaiders():
         self.sprites['all'].clear(self.display, self.background)
 
     def _update_sprites(self, seconds_elapsed):
-        """Update the time based variables for all sprites and do any other
-        update procedures.
-
-        Atrributes:
-            seconds_elapsed (float): Seconds since the last frame was drawn.
-        """
+        """Update all the sprites timed based variables and do any operations
+        which involve updating the sprites"""
         self.sprites['all'].update(seconds_elapsed)
+
+        for bullet in self.sprites['bullets']:
+            bullet.move()
 
         for shield in self.sprites['shields']:
             shield.take_damage(self.sprites['bullets'])
 
     def _handle_input(self, keys):
-        """Handle any input from the user playing the game.
-
-        Atrributes:
-            keys (dict {bool}): The keys that are currently pressed.
-        """
+        """Handle any input from the user."""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -99,11 +96,7 @@ class SpaceInvaiders():
 
     @classmethod
     def _draw_sprites(cls, dirty_rects):
-        """Redraw any sprites which where cleared and updated.
-
-        Atrributes:
-            dirty_rects (list [pygame.Rect]): The rects to be redrawn.
-        """
+        """Redraw the sprites on the display."""
         pygame.display.update(dirty_rects)
 
 

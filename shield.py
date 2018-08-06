@@ -9,26 +9,26 @@ import random
 import pygame
 
 from constants import SHIELD
+from sprite import Sprite
 from sprite_sheet import SpriteSheet
 
 
-class Shield(pygame.sprite.DirtySprite):
-    """A shield that the user can hide behind to avoid bullets from the aliens.
+class Shield(Sprite):
+    """The shields which the user will hide behind to avoid bullets.
 
     Arguments:
-        position (tuple (int, int)): The position to place the shield.
-        groups (pygame.Group): The groups this sprite will be added too.
+        groups (pygame.sprite.Group): All the groups this sprite will be in.
+        position (tuple {int, int}): The shields initial placement.
 
     Attributes:
-        dirty (int): Determine if the sprite should be redrawn or not.
-        image (pygame.Surface): The image which will represent the sprite.
-        rect (pygame.Rect): The rect for 'image'.
+        image (pygame.Surface): The image representing the sprite.
+        rect (pygame.Rect): Rect representing the surface.
+        mask (pygame.Mask): Mask used for precise collison detection.
     """
     image = SpriteSheet.load_sprite(SHIELD)
 
     def __init__(self, position, *groups):
         super().__init__(*groups)
-        self.dirty = 1
         self.image = self.image.convert_alpha()
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -36,11 +36,10 @@ class Shield(pygame.sprite.DirtySprite):
         self.rect.x, self.rect.y = position
 
     def take_damage(self, bullets):
-        """Check if there are any bullets colliding with the shield. If there
-        is take some damage and remove the bullet.
+        """Take any damage from the bullets on the display surface.
 
         Arguments:
-            bullets (pygame.sprite.LayeredDirty): All the bullet sprites.
+            bullets (Bullet): The group of bullet sprites.
         """
         for bullet in bullets:
             try:
