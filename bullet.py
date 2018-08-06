@@ -5,6 +5,8 @@ Email: jamesl33info@gmail.com
 Supported Python version: 3.5.2+
 """
 
+import pygame
+
 from constants import DISPLAY
 from sprite import Sprite
 
@@ -29,3 +31,14 @@ class Bullet(Sprite):
 
         if not self.rect.colliderect(DISPLAY):
             self.kill()
+
+    def take_damage(self, bullets):
+        """See if any of the bullets have come in contact with each other."""
+        for bullet in bullets:
+            if bullet is self:
+                continue
+
+            if pygame.sprite.collide_rect(self, bullet):
+                # TODO - Create a bullet explosion sprite.
+                bullet.kill()
+                self.kill()

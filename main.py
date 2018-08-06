@@ -80,6 +80,11 @@ class SpaceInvaiders():
         for bullet in self.sprites['bullets']:
             bullet.move()
 
+        self.tank.take_damage(self.sprites['bullets'], self.sprites['all'])
+
+        for bullet in self.sprites['bullets']:
+            bullet.take_damage(self.sprites['bullets'])
+
         for shield in self.sprites['shields']:
             shield.take_damage(self.sprites['bullets'])
 

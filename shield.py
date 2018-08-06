@@ -22,16 +22,16 @@ class Shield(Sprite):
 
     Attributes:
         image (pygame.Surface): The image representing the sprite.
-        rect (pygame.Rect): Rect representing the surface.
         mask (pygame.Mask): Mask used for precise collison detection.
+        rect (pygame.Rect): Rect representing the surface.
     """
     image = SpriteSheet.load_sprite(SHIELD)
 
     def __init__(self, position, *groups):
         super().__init__(*groups)
         self.image = self.image.convert_alpha()
-        self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
 
         self.rect.x, self.rect.y = position
 

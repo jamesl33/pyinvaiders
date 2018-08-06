@@ -35,7 +35,7 @@ class SpriteSheet():
             count (int): The amount of sprites in the strip.
 
         Returns:
-            sprite_strip (iter [pygame.Surface]): The extracted sprite strip.
+            sprite_strip ([pygame.Surface]): The extracted sprite strip.
         """
         sprite_strip = []
 
@@ -43,4 +43,4 @@ class SpriteSheet():
             sprite_strip.append(SpriteSheet.sprite_sheet.subsurface(rect))
             rect.x += rect.w
 
-        return iter(sprite_strip)
+        return sprite_strip
