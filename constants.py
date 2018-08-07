@@ -10,18 +10,20 @@ import pygame
 
 FPS = 120
 
-BACKGROUND = pygame.Rect(0, 0, 750, 750)
-BULLET_EXPLOSION = pygame.Rect(4, 320, 16, 16)
 DISPLAY = pygame.Rect(0, 0, 750, 750)
-SHIELD = pygame.Rect(4, 180, 88, 64)
-SHIP_BULLET = pygame.Rect(4, 340, 4, 20)
-SHIP_EXPLOSION = pygame.Rect(4, 284, 52, 32)
-SHIP_TYPE_FOUR = pygame.Rect(4, 112, 64, 28)
-SHIP_TYPE_ONE = pygame.Rect(4, 4, 32, 32)
-SHIP_TYPE_THREE = pygame.Rect(4, 76, 48, 32)
-SHIP_TYPE_TWO = pygame.Rect(4, 40, 44, 32)
-TANK = pygame.Rect(4, 144, 52, 32)
-TANK_BULLET = pygame.Rect(4, 340, 4, 20)
-TANK_EXPLOSION = pygame.Rect(4, 248, 60, 32)
+BACKGROUND = pygame.Rect(0, 0, 750, 750)
 
 NUM_SHIELDS = 4
+SHIELD = pygame.Rect(4, 180, 88, 64)
+
+SHIP_TYPE_ONE = pygame.Rect(4, 4, 32, 32)
+SHIP_TYPE_TWO = pygame.Rect(4, 40, 44, 32)
+SHIP_TYPE_THREE = pygame.Rect(4, 76, 48, 32)
+SHIP_TYPE_FOUR = pygame.Rect(4, 112, 64, 28)
+SHIP_BULLET = pygame.Rect(4, 340, 4, 20)
+SHIP_EXPLOSION = pygame.Rect(4, 284, 52, 32)
+
+TANK = pygame.Rect(4, 144, 52, 32)
+TANK_EXPLOSION = pygame.Rect(4, 248, 60, 32)
+TANK_BULLET = pygame.Rect(4, 340, 4, 20)
+TANK_BULLET_EXPLOSION = pygame.Rect(4, 320, 16, 16)
