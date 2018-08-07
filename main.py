@@ -12,7 +12,6 @@ import pygame
 from constants import DISPLAY, FPS, SHIELD, NUM_SHIELDS, BACKGROUND
 from shield import Shield
 from tank import Tank
-from tank_bullet import TankBullet
 
 
 class SpaceInvaiders():
@@ -83,10 +82,7 @@ class SpaceInvaiders():
         self.sprites['all'].update(seconds_elapsed)
 
         for bullet in self.sprites['bullets']:
-            if isinstance(bullet, TankBullet):
-                bullet.move(self.sprites['all'], self.sprites['explosions'])
-            else:
-                bullet.move()
+            bullet.move()
 
         for ship in self.sprites['ships']:
             ship.shoot(self.tank,

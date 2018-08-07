@@ -14,6 +14,8 @@ class Explosion(Sprite):
 
     Arguments:
         images (list): The frames which make up the animation.
+        position (tuple {int, int}): The x, y position to place the sprite.
+        animation_speed (float): How long to wait before progressing a frame.
         groups (pygame.sprite.Group): All the groups this sprite will be in.
 
     Attributes:
@@ -21,11 +23,14 @@ class Explosion(Sprite):
         image (pygame.Surface): The image representing the sprite.
         rect (pygame.Rect): The rect for the image surface.
     """
-    def __init__(self, images, *groups):
+    def __init__(self, images, position, animation_speed, *groups):
         super().__init__(*groups)
         self.images = iter(images)
         self.image = next(self.images)
         self.rect = self.image.get_rect()
+        self.animation_speed = animation_speed
+
+        self.rect.x, self.rect.y = position
 
     def update(self, seconds_elapsed):
         """Update the animation for the explosion.

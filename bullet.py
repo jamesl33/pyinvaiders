@@ -15,18 +15,27 @@ class Bullet(Sprite):
     """A base class for any type of bullet.
 
     Arguments:
+        image (pygame.Surface): The image that represents the sprite.
+        position (tuple {int, int}): The x, y position to place the sprite.
+        velocity (pygame.math.Vector2): The x, y velocity of the sprite.
         groups (pygame.sprite.Group): All the groups this sprite will be in.
 
     Attributes:
+        dirty (int): Whether or not too redraw the sprite.
         image (pygame.Surface): The image which represents the bullet.
         mask (pygame.Mask): The image's mask.
         rect (pygame.Rect): The image's rect.
+        velocity (pygame.math.Vector2): The x, y velocity of the sprite.
     """
-    def __init__(self, image, *groups):
+    def __init__(self, image, position, velocity, *groups):
         super().__init__(*groups)
+        self.dirty = 2
         self.image = image.convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
+        self.velocity = velocity
+
+        self.rect.x, self.rect.y = position
 
     def move(self):
         """Update the bullets position depending on the objects time based
