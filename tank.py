@@ -21,8 +21,8 @@ class Tank(Sprite):
         groups (pygame.sprite.Group): All the groups this sprite will be in.
 
     Attributes:
-        current_time (int): Allow tank to fire from the start of the game.
         image (pygame.Surface): The image representing the sprite.
+        current_time (int): Allow tank to fire from the start of the game.
         mask (pygame.Mask): Mask used for precise collison detection.
         rect (pygame.Rect): The rect for the image surface.
         reload_speed (float): The amount of time to wait before fireing a shot.

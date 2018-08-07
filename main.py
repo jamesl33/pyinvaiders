@@ -9,9 +9,10 @@ Supported Python version: 3.5.2+
 
 import pygame
 
-from constants import DISPLAY, FPS, SHIELD, NUM_SHIELDS
+from constants import DISPLAY, FPS, SHIELD, NUM_SHIELDS, BACKGROUND
 from shield import Shield
 from tank import Tank
+from tank_bullet import TankBullet
 
 
 class SpaceInvaiders():
@@ -28,12 +29,16 @@ class SpaceInvaiders():
     def __init__(self):
         self.background = pygame.Surface(DISPLAY.size)
         self.clock = pygame.time.Clock()
-        self.display = pygame.display.set_mode(DISPLAY.size)
+        self.display = pygame.display.set_mode(BACKGROUND.size)
         self.sprites = {
             'all': pygame.sprite.LayeredDirty(),
-            'tanks': pygame.sprite.LayeredDirty(),
             'bullets': pygame.sprite.LayeredDirty(),
-            'shields': pygame.sprite.LayeredDirty()
+            'explosions': pygame.sprite.LayeredDirty(),
+            'shields': pygame.sprite.LayeredDirty(),
+            'ship_bullets': pygame.sprite.LayeredDirty(),
+            'ships': pygame.sprite.LayeredDirty(),
+            'tank_bullets': pygame.sprite.LayeredDirty(),
+            'tanks': pygame.sprite.LayeredDirty()
         }
         self.tank = None
 
@@ -78,15 +83,31 @@ class SpaceInvaiders():
         self.sprites['all'].update(seconds_elapsed)
 
         for bullet in self.sprites['bullets']:
-            bullet.move()
+            if isinstance(bullet, TankBullet):
+                bullet.move(self.sprites['all'], self.sprites['explosions'])
+            else:
+                bullet.move()
 
-        self.tank.take_damage(self.sprites['bullets'], self.sprites['all'])
+        for ship in self.sprites['ships']:
+            ship.shoot(self.tank,
+                       self.sprites['all'],
+                       self.sprites['bullets'],
+                       self.sprites['ship_bullets'])
+
+        self.tank.take_damage(self.sprites['ship_bullets'],
+                              self.sprites['all'],
+                              self.sprites['explosions'])
 
         for bullet in self.sprites['bullets']:
             bullet.take_damage(self.sprites['bullets'])
 
         for shield in self.sprites['shields']:
             shield.take_damage(self.sprites['bullets'])
+
+        for ship in self.sprites['ships']:
+            ship.take_damage(self.sprites['tank_bullets'],
+                             self.sprites['all'],
+                             self.sprites['explosions'])
 
     def _handle_input(self, keys):
         """Handle any input from the user."""
@@ -97,7 +118,9 @@ class SpaceInvaiders():
         self.tank.move(keys[pygame.K_RIGHT] - keys[pygame.K_LEFT])
 
         if keys[pygame.K_UP]:
-            self.tank.shoot(self.sprites['all'], self.sprites['bullets'])
+            self.tank.shoot(self.sprites['all'],
+                            self.sprites['bullets'],
+                            self.sprites['tank_bullets'])
 
     @classmethod
     def _draw_sprites(cls, dirty_rects):

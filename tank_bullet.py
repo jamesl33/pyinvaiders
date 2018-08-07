@@ -10,6 +10,7 @@ import pygame
 from bullet import Bullet
 from constants import TANK_BULLET
 from sprite_sheet import SpriteSheet
+from tank_bullet_explosion import TankBulletExplosion
 
 
 class TankBullet(Bullet):
@@ -20,19 +21,23 @@ class TankBullet(Bullet):
         groups (pygame.sprite.Group): All the groups this sprite will be in.
 
     Attributes:
-        dirty (int): Determine if the sprite should be redrawn or not.
         image (pygame.Surface): The image representing the sprite.
-        rect (pygame.Rect): The rect for the image surface.
+        dirty (int): Determine if the sprite should be redrawn or not.
         velocity (pygame.math.Vector2): Movement velocity in the x, y axis.
     """
     image = SpriteSheet().load_sprite(TANK_BULLET)
 
     def __init__(self, tank, *groups):
-        super().__init__(*groups)
+        super().__init__(self.image, *groups)
         self.dirty = 2
-        self.image = self.image.convert_alpha()
-        self.rect = self.image.get_rect()
         self.velocity = pygame.math.Vector2(0, 750)
 
         self.rect.x = tank.rect.x + tank.rect.width / 2 - self.rect.width / 2
         self.rect.y = tank.rect.y - self.rect.height
+
+    def move(self, *groups):
+        if self.rect.y <= 0:
+            TankBulletExplosion(self, *groups)
+            self.kill()
+
+        super().move()

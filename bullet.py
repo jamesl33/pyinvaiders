@@ -18,11 +18,15 @@ class Bullet(Sprite):
         groups (pygame.sprite.Group): All the groups this sprite will be in.
 
     Attributes:
-        damage (int): The damage that the bullet will case on inpact.
+        image (pygame.Surface): The image which represents the bullet.
+        mask (pygame.Mask): The image's mask.
+        rect (pygame.Rect): The image's rect.
     """
-    def __init__(self, *groups):
+    def __init__(self, image, *groups):
         super().__init__(*groups)
-        self.damage = None
+        self.image = image.convert_alpha()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
 
     def move(self):
         """Update the bullets position depending on the objects time based
