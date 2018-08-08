@@ -7,6 +7,7 @@ Supported Python version: 3.5.2+
 
 import pygame
 
+from animation import Animation
 from bullet import Bullet
 from constants import DISPLAY, TANK, TANK_BULLET, TANK_EXPLOSION
 from explosion import Explosion
@@ -33,7 +34,7 @@ class Tank(Sprite):
     images = {
         'default': SpriteSheet().load_sprite(TANK),
         'bullet': SpriteSheet().load_sprite(TANK_BULLET),
-        'explosion': SpriteSheet().load_sprite_strip(TANK_EXPLOSION, 1)
+        'explosion': Animation(SpriteSheet().load_sprite_strip(TANK_EXPLOSION, 1), 0.3)
     }
 
     def __init__(self, *groups):
@@ -90,6 +91,6 @@ class Tank(Sprite):
         for bullet in bullets:
             if pygame.sprite.collide_mask(self, bullet):
                 Explosion(self.images['explosion'],
-                          (self.rect.x - 4, self.rect.y), 0.5, *groups)
+                          (self.rect.x - 4, self.rect.y), *groups)
                 bullet.kill()
                 self.kill()

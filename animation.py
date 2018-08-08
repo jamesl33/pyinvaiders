@@ -21,7 +21,7 @@ class Animation():
         frames (list [pygame.Surface]): The frames that make up the animation.
         loop (bool): Whether or not this animation is looping.
     """
-    def __init__(self, frames, animation_speed, loop=True):
+    def __init__(self, frames, animation_speed, loop=False):
         self.animation_speed = animation_speed
         self.frame = 0
         self.frames = frames

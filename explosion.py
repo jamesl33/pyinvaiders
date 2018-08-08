@@ -13,23 +13,21 @@ class Explosion(Sprite):
     hit by a bullet.
 
     Arguments:
-        images (list): The frames which make up the animation.
+        animation (Animation): The animation for the explosion.
         position (tuple {int, int}): The x, y position to place the sprite.
         animation_speed (float): How long to wait before progressing a frame.
         groups (pygame.sprite.Group): All the groups this sprite will be in.
 
     Attributes:
-        animation_speed (float): How long to wait before progressing a frame.
-        images (list): The frames which make up the animation.
+        animation (Animation): The animation for the explosion.
         image (pygame.Surface): The image representing the sprite.
         last_frame_time (float): The last time a frame was processed.
         rect (pygame.Rect): The rect for the image surface.
     """
-    def __init__(self, images, position, animation_speed, *groups):
+    def __init__(self, animation, position, *groups):
         super().__init__(*groups)
-        self.animation_speed = animation_speed
-        self.images = iter(images)
-        self.image = next(self.images)
+        self.animation = animation
+        self.image = self.animation.next()
         self.last_frame_time = 0
         self.rect = self.image.get_rect()
 
@@ -43,11 +41,12 @@ class Explosion(Sprite):
         """
         super().update(seconds_elapsed)
 
-        if self.last_frame_time - self.current_time <= -self.animation_speed:
-            try:
-                self.image = next(self.images)
-            except StopIteration:
+        if self.last_frame_time - self.current_time <= -self.animation.animation_speed:
+            next_frame = self.animation.next()
+
+            if next_frame is None:
                 self.kill()
 
+            self.image = next_frame
             self.last_frame_time = self.current_time
             self.dirty = 1

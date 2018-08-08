@@ -48,26 +48,26 @@ class Ship(Sprite):
         ship_type (int): Which ship type was used.
     """
     type_one_images = {
-        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_ONE, 2), 1),
+        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_ONE, 2), 1, loop=True),
         'bullet': SpriteSheet().load_sprite(SHIP_TYPE_ONE_BULLET),
-        'explosion': SpriteSheet().load_sprite_strip(SHIP_TYPE_ONE_EXPLOSION, 1)
+        'explosion': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_ONE_EXPLOSION, 1), 0.3)
     }
 
     type_two_images = {
-        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_TWO, 2), 1),
+        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_TWO, 2), 1, loop=True),
         'bullet': SpriteSheet().load_sprite(SHIP_TYPE_TWO_BULLET),
-        'explosion': SpriteSheet().load_sprite_strip(SHIP_TYPE_TWO_EXPLOSION, 1)
+        'explosion': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_TWO_EXPLOSION, 1), 0.3)
     }
 
     type_three_images = {
-        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_THREE, 2), 1),
+        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_THREE, 2), 1, loop=True),
         'bullet': SpriteSheet().load_sprite(SHIP_TYPE_THREE_BULLET),
-        'explosion': SpriteSheet().load_sprite_strip(SHIP_TYPE_THREE_EXPLOSION, 1)
+        'explosion': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_THREE_EXPLOSION, 1), 0.3)
     }
 
     type_four_images = {
         'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_FOUR, 1), 1),
-        'explosion': SpriteSheet().load_sprite_strip(SHIP_TYPE_FOUR_EXPLOSION, 1)
+        'explosion': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_FOUR_EXPLOSION, 1), 0.3)
     }
 
     def __init__(self, ship_type, position, *groups):
@@ -134,7 +134,7 @@ class Ship(Sprite):
         for bullet in bullets:
             if pygame.sprite.collide_mask(self, bullet):
                 explosion = Explosion(self.images['explosion'],
-                                      (self.rect.x, self.rect.y), 0.3, *groups)
+                                      (self.rect.x, self.rect.y), *groups)
                 # TODO remove these hardcoded values.
                 if self.ship_type == 1:
                     explosion.rect.x -= 10
