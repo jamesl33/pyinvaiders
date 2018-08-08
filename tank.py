@@ -24,6 +24,7 @@ class Tank(Sprite):
         images (dict {pygame.Surface}): The images used by the tank sprite.
         current_time (int): Allow tank to fire from the start of the game.
         image (pygame.Surface): The image which represents the sprite.
+        last_shot_time (float): The last time the tank fired a bullet.
         mask (pygame.Mask): Mask used for precise collison detection.
         rect (pygame.Rect): The rect for the image surface.
         reload_speed (float): The amount of time to wait before fireing a shot.
@@ -37,8 +38,8 @@ class Tank(Sprite):
 
     def __init__(self, *groups):
         super().__init__(*groups)
-        self.current_time = 1
         self.image = self.images['default'].convert_alpha()
+        self.last_shot_time = 0
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.reload_speed = 0.5
@@ -68,7 +69,7 @@ class Tank(Sprite):
         Arguments:
             groups (pygame.sprite.Group): The groups the bullet will be in.
         """
-        if self.current_time >= self.reload_speed:
+        if self.last_shot_time - self.current_time <= -self.reload_speed:
             pos_x = TANK_BULLET.x = self.rect.x + self.rect.width / 2 - \
                 TANK_BULLET.width / 2
             pos_y = TANK_BULLET.y = self.rect.y - TANK_BULLET.height
@@ -76,7 +77,7 @@ class Tank(Sprite):
             Bullet(self.images['bullet'], (pos_x, pos_y),
                    pygame.math.Vector2(0, 750), *groups)
 
-            self.current_time = 0
+            self.last_shot_time = self.current_time
 
     def take_damage(self, bullets, *groups):
         """Check if there is a collision with an ememy bullet. If there is

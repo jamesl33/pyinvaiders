@@ -29,7 +29,6 @@ SHIP_TYPE_THREE_BULLET = pygame.Rect(4, 376, 4, 20)
 SHIP_TYPE_THREE_EXPLOSION = pygame.Rect(4, 284, 52, 32)
 
 SHIP_TYPE_FOUR = pygame.Rect(4, 112, 64, 28)
-SHIP_TYPE_FOUR_BULLET = pygame.Rect(4, 376, 4, 20)
 SHIP_TYPE_FOUR_EXPLOSION = pygame.Rect(4, 320, 52, 32)
 
 TANK = pygame.Rect(4, 144, 52, 32)

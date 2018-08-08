@@ -42,5 +42,6 @@ class SpriteSheet():
         for _ in range(count):
             sprite_strip.append(SpriteSheet.sprite_sheet.subsurface(rect))
             rect.x += rect.w
+            rect.x += 4  # Add pixel gap between each frame on sprite sheet.
 
         return sprite_strip
