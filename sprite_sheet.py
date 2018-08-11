@@ -7,41 +7,46 @@ Supported Python version: 3.5.2+
 
 import pygame
 
+from constants import SPRITE_SHEET
+
 
 class SpriteSheet():
     """Allow the fetching of sprites from an external sprite sheet."""
-    sprite_sheet = pygame.image.load('assets/images/sprite-sheet.png')
+    try:
+        sheet = pygame.image.load(SPRITE_SHEET)
+    except pygame.error:
+        print('Error: Failed to open sprite sheet')
+        exit()
 
-    @staticmethod
-    def load_sprite(rect):
-        """Get a single image from a sprite sheet.
-
-        Arguments:
-            rect (pygame.Rect): The rect which contains the sprite.
-
-        Returns:
-            sprite (pygame.Surface): The extracted image.
-        """
-        sprite = SpriteSheet.sprite_sheet.subsurface(rect)
-
-        return sprite
-
-    @staticmethod
-    def load_sprite_strip(rect, count):
-        """Get a strip of images form a sprite sheet.
+    @classmethod
+    def sprite(cls, rect):
+        """Fetch a single sprite from the sprite sheet.
 
         Arguments:
-            rect (pygame.Rect): The rect which contains the sprite.
-            count (int): The amount of sprites in the strip.
+            rect (pygame.Rect): The rect for the sprite you are trying to get.
 
         Returns:
-            sprite_strip ([pygame.Surface]): The extracted sprite strip.
+            pygame.Surface: A surface containing the sprite.
         """
-        sprite_strip = []
+        return cls.sheet.subsurface(rect)
+
+    @classmethod
+    def animation(cls, rect, count):
+        """Get a list of surfaces containg sprites which can be used to create
+        animations.
+
+        Arguments:
+            rect (pygame.Rect): The rect which contains the first frame.
+            count (int): The amount of frames to extract.
+
+        Returns:
+            list [pygame.Surface]: A list containing a surface for each frame.
+        """
+        animation = []
+        rect = rect.copy()
 
         for _ in range(count):
-            sprite_strip.append(SpriteSheet.sprite_sheet.subsurface(rect))
-            rect.x += rect.w
-            rect.x += 4  # Add pixel gap between each frame on sprite sheet.
+            animation.append(cls.sprite(rect))
+            rect.x += rect.width + 4
 
-        return sprite_strip
+        return animation

@@ -5,145 +5,141 @@ Email: jamesl33info@gmail.com
 Supported Python version: 3.5.2+
 """
 
+from copy import copy
 
 import pygame
 
 from animation import Animation
-from constants import SHIP_TYPE_ONE, \
-                      SHIP_TYPE_ONE_BULLET, \
-                      SHIP_TYPE_ONE_EXPLOSION, \
-                      SHIP_TYPE_TWO, \
-                      SHIP_TYPE_TWO_BULLET, \
-                      SHIP_TYPE_TWO_EXPLOSION, \
-                      SHIP_TYPE_THREE, \
-                      SHIP_TYPE_THREE_BULLET, \
-                      SHIP_TYPE_THREE_EXPLOSION, \
-                      SHIP_TYPE_FOUR, \
-                      SHIP_TYPE_FOUR_EXPLOSION
-from bullet import Bullet
+from constants import TYPE_ONE, TYPE_ONE_BULLET, TYPE_ONE_EXPLOSION, \
+                      TYPE_ONE_BULLET_EXPLOSION, TYPE_TWO, TYPE_TWO_BULLET, \
+                      TYPE_TWO_EXPLOSION, TYPE_TWO_BULLET_EXPLOSION, \
+                      TYPE_THREE, TYPE_THREE_BULLET, TYPE_THREE_EXPLOSION, \
+                      TYPE_THREE_BULLET_EXPLOSION
+from entity import Entity
 from explosion import Explosion
-from sprite import Sprite
 from sprite_sheet import SpriteSheet
+from ship_bullet import ShipBullet
 
 
-class Ship(Sprite):
-    """Alien ship which the user gas to shoot down using the Tank.
+class Ship(Entity):
+    """
 
     Arguments:
-        ship_type (int): Determine which ship images to use.
-        position (tuple {int, int}): The position to place the ship.
-        groups (pygame.sprite.Group): All the groups this sprite will be in.
+        ship_type (int): Which type of ship to create.
+        position (tuple {int, int}): The positon to place the ship.
+        groups (pygame.sprite.Group): The groups the ship sprite will be in.
 
     Attributes:
-        type_one_images (dict): The images used by the first ship sprite.
-        type_two_images (dict): The images used by the second ship sprite.
-        type_three_images (dict): The images used by the third ship sprite.
-        type_four_images (dict): The images used by the fourth ship sprite.
-        image (pygame.Surface): The image representing the surface.
-        last_frame_time (float): The last time the animation progressed.
-        last_shot_time (float): The last time a shot was fired.
-        mask (pygame.Mask): The image's mask.
-        rect (pygame.Rect): The image's rect.
-        reload_speed (int): How long the ship has to wait before firing a shot.
-        ship_type (int): Which ship type was used.
+        type_one (dict): The images and animations for ship type one.
+        type_two (dict): The images and animations for ship type two.
+        type_three (dict): The images and animations for ship type three.
+        _ship_type (int): The type of the ship sprite.
+        _animation (Animation): The sprites default animation.
+        image (pygame.Surface): The image which represents the sprite.
+        rect (pygame.Rect): The rect used to place the sprite.
+        mask (pygame.mask.Mask): The mask used for collision detection.
+        _last_frame (float): The last time the animation was updated.
+        _last_shot (float): The last time a shot was fired.
     """
-    type_one_images = {
-        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_ONE, 2), 1, loop=True),
-        'bullet': SpriteSheet().load_sprite(SHIP_TYPE_ONE_BULLET),
-        'explosion': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_ONE_EXPLOSION, 1), 0.3)
+    type_one = {
+        'ship': Animation(SpriteSheet.animation(TYPE_ONE, 2), 1, loop=True),
+        'bullet': Animation(
+            SpriteSheet.animation(TYPE_ONE_BULLET, 2), 0.2, loop=True),
+        'explosion': Animation(
+            SpriteSheet.animation(TYPE_ONE_EXPLOSION, 1), 0.3),
+        'bullet_explosion': Animation(
+            SpriteSheet.animation(TYPE_ONE_BULLET_EXPLOSION, 1), 0.3)
     }
 
-    type_two_images = {
-        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_TWO, 2), 1, loop=True),
-        'bullet': SpriteSheet().load_sprite(SHIP_TYPE_TWO_BULLET),
-        'explosion': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_TWO_EXPLOSION, 1), 0.3)
+    type_two = {
+        'ship': Animation(SpriteSheet.animation(TYPE_TWO, 2), 1, loop=True),
+        'bullet': Animation(
+            SpriteSheet.animation(TYPE_TWO_BULLET, 10), 0.05, loop=True),
+        'explosion': Animation(
+            SpriteSheet.animation(TYPE_TWO_EXPLOSION, 1), 0.3),
+        'bullet_explosion': Animation(
+            SpriteSheet.animation(TYPE_TWO_BULLET_EXPLOSION, 1), 0.3)
     }
 
-    type_three_images = {
-        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_THREE, 2), 1, loop=True),
-        'bullet': SpriteSheet().load_sprite(SHIP_TYPE_THREE_BULLET),
-        'explosion': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_THREE_EXPLOSION, 1), 0.3)
-    }
-
-    type_four_images = {
-        'default': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_FOUR, 1), 1),
-        'explosion': Animation(SpriteSheet().load_sprite_strip(SHIP_TYPE_FOUR_EXPLOSION, 1), 0.3)
+    type_three = {
+        'ship': Animation(SpriteSheet.animation(TYPE_THREE, 2), 1, loop=True),
+        'bullet': Animation(
+            SpriteSheet.animation(TYPE_THREE_BULLET, 7), 0.05, loop=True),
+        'explosion': Animation(
+            SpriteSheet.animation(TYPE_THREE_EXPLOSION, 1), 0.3),
+        'bullet_explosion': Animation(
+            SpriteSheet.animation(TYPE_THREE_BULLET_EXPLOSION, 1), 0.3)
     }
 
     def __init__(self, ship_type, position, *groups):
         super().__init__(*groups)
-        if ship_type == 1:
-            self.images = self.type_one_images
-        elif ship_type == 2:
-            self.images = self.type_two_images
-        elif ship_type == 3:
-            self.images = self.type_three_images
-        elif ship_type == 4:
-            self.images = self.type_four_images
+        self._ship_type = ship_type
 
-        self.image = self.images['default'].next().convert_alpha()
-        self.last_frame_time = 0
-        self.last_shot_time = 0
-        self.mask = pygame.mask.from_surface(self.image)
+        if self.type == 1:
+            self._animation = copy(self.type_one['ship'])
+        elif self.type == 2:
+            self._animation = copy(self.type_two['ship'])
+        elif self.type == 3:
+            self._animation = copy(self.type_three['ship'])
+
+        self.image = self._animation.next().convert_alpha()
         self.rect = self.image.get_rect()
-        self.reload_speed = 5
-        self.ship_type = ship_type
+        self.mask = pygame.mask.from_surface(self.image)
+        self._last_shot = 0
+        self._last_frame = 0
+        self._reload_speed = 5
 
-        self.rect.x, self.rect.y = position
+        self.rect.topleft = position
+
+    @property
+    def type(self):
+        """Get which ship type this sprite is."""
+        return self._ship_type
 
     def update(self, seconds_elapsed):
+        """Update the sprites time based variables and if the time is right
+        update the sprites animation.
+
+        Arguments:
+            seconds_elapsed (float): The time in seconds since the last frame.
+        """
         super().update(seconds_elapsed)
 
-        if self.last_frame_time - self.current_time <= \
-                -self.images['default'].animation_speed:
-            self.image = self.images['default'].next().convert_alpha()
+        if abs(self._last_frame - self._current_time) >= self._animation.delay:
+            self.image = self._animation.next().convert_alpha()
             self.dirty = 1
-            self.last_frame_time = self.current_time
+            self._last_frame = self._current_time
 
-    def shoot(self, ship, *groups):
-        """If the ship is not reloading then fire a shot.
+    def shoot(self, tank, *groups):
+        """If the ship is not reloading then fire a shot at the tank.
 
         Arguments:
-            ship (Ship): The ship sprite which fired the bullet.
-            groups (pygame.sprite.Group): The groups the bullet will be put in.
+            tank (Tank): The tank the ships are shooting at.
+            groups (pygame.sprite.Group): The groups the bullet will be in.
         """
-        if self.ship_type == 4:
-            return
-
-        if self.rect.x >= ship.rect.x - 50 and self.rect.y <= ship.rect.x + 50:
-            if self.last_shot_time - self.current_time <= -self.reload_speed:
-                pos_x = self.rect.x + self.rect.width / 2 - \
-                    self.images['bullet'].get_rect().width / 2
-                pos_y = self.rect.y + self.rect.height
-
-                Bullet(self.images['bullet'],
-                       (pos_x, pos_y),
-                       pygame.math.Vector2(0, -750),
-                       *groups)
-
-                self.last_shot_time = self.current_time
+        if self.rect.x >= tank.rect.x - 50 and self.rect.y <= tank.rect.x + 50:
+            if abs(self._last_shot - self._current_time) >= self._reload_speed:
+                ShipBullet(self, *groups)
+                self._last_shot = self._current_time
 
     def take_damage(self, bullets, *groups):
-        """If there are any bullets in contact with the ship take destroy the
-        ship.
+        """Check if the ship should be destroyed.
 
         Arguments:
-            bullets (pygame.sprite.Group): A group of bullet sprite objects.
-            groups (pygame.sprite.Group): The groups to add the explosion to.
+            bullets (pygame.sprite.Group): The group of bullets.
+            groups (pygame.sprite.Group): The groups the explosion will be in.
         """
         for bullet in bullets:
             if pygame.sprite.collide_mask(self, bullet):
-                explosion = Explosion(self.images['explosion'],
-                                      (self.rect.x, self.rect.y), *groups)
-                # TODO remove these hardcoded values.
-                if self.ship_type == 1:
-                    explosion.rect.x -= 10
-                elif self.ship_type == 2:
-                    explosion.rect.x -= 4
-                elif self.ship_type == 3:
-                    explosion.rect.x -= 2
-                elif self.ship_type == 4:
-                    explosion.rect.x += 6
+                if self._ship_type == 1:
+                    Explosion(copy(self.type_one['explosion']),
+                              (self.rect.x - 10, self.rect.y), *groups)
+                elif self._ship_type == 2:
+                    Explosion(copy(self.type_two['explosion']),
+                              (self.rect.x - 4, self.rect.y), *groups)
+                elif self._ship_type == 3:
+                    Explosion(copy(self.type_three['explosion']),
+                              (self.rect.x - 2, self.rect.y), *groups)
 
                 bullet.kill()
                 self.kill()

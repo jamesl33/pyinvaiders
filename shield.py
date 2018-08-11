@@ -5,41 +5,43 @@ Email: jamesl33info@gmail.com
 Supported Python version: 3.5.2+
 """
 
-import random
+from copy import copy
+from random import randint
+
 import pygame
 
 from constants import SHIELD
-from sprite import Sprite
+from entity import Entity
 from sprite_sheet import SpriteSheet
 
 
-class Shield(Sprite):
-    """The shields which the user will hide behind to avoid bullets.
+class Shield(Entity):
+    """Shield which is placed between the user and the alien horde.
 
     Arguments:
-        groups (pygame.sprite.Group): All the groups this sprite will be in.
-        position (tuple {int, int}): The shields initial placement.
+        position (tuple {int, int}): The position to place the shield.
+        groups (pygame.sprite.Group): All the groups this entity will be in.
 
     Attributes:
-        image (pygame.Surface): The image representing the sprite.
-        mask (pygame.Mask): Mask used for precise collison detection.
-        rect (pygame.Rect): Rect representing the surface.
+        image (pygame.Surface): The current image which represents the sprite.
+        rect (pygame.Rect): The rect used for placing the sprite.
+        mask (pygame.mask.Mask): The mast for the image.
     """
-    image = SpriteSheet.load_sprite(SHIELD)
+    shield = SpriteSheet.sprite(SHIELD)
 
     def __init__(self, position, *groups):
         super().__init__(*groups)
-        self.image = self.image.convert_alpha()
-        self.mask = pygame.mask.from_surface(self.image)
+        self.image = copy(self.shield).convert_alpha()
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
 
-        self.rect.x, self.rect.y = position
+        self.rect.topleft = position
 
     def take_damage(self, bullets):
-        """Take any damage from the bullets on the display surface.
+        """Take damage from the bullets on the display.
 
         Arguments:
-            bullets (Bullet): The group of bullet sprites.
+            bullets (pygame.sprite.Group): The groups which contains bullets.
         """
         for bullet in bullets:
             try:
@@ -49,27 +51,25 @@ class Shield(Sprite):
             except TypeError:
                 continue
 
-            self.image.fill((0, 0, 0, 0), pygame.Rect(pos_x - 4, pos_y, 8, 8))
+            destroy_rect = pygame.Rect((pos_x - 4, pos_y, 8, 8))
+            self.image.fill((0, 0, 0, 0), destroy_rect)
 
             for _ in range(10):
-                destroy_x = random.randint(pos_x - 4, pos_x + 4)
-                destroy_y = random.randint(pos_y - 4, pos_y + 4)
-
-                self.image.fill((0, 0, 0, 0),
-                                pygame.Rect(destroy_x - 2, destroy_y, 4, 4))
+                destroy_x = randint(pos_x - 4, pos_x + 4)
+                destroy_y = randint(pos_y - 4, pos_y + 4)
+                destroy_rect = (destroy_x - 2, destroy_y, 4, 4)
+                self.image.fill((0, 0, 0, 0), destroy_rect)
 
             for _ in range(20):
-                destroy_x = random.randint(pos_x - 8, pos_x + 8)
-                destroy_y = random.randint(pos_y - 8, pos_y + 8)
-
-                self.image.fill((0, 0, 0, 0),
-                                pygame.Rect(destroy_x - 1, destroy_y, 2, 2))
+                destroy_x = randint(pos_x - 8, pos_x + 8)
+                destroy_y = randint(pos_y - 8, pos_y + 8)
+                destroy_rect = (destroy_x - 1, destroy_y, 2, 2)
+                self.image.fill((0, 0, 0, 0), destroy_rect)
 
             for _ in range(30):
-                destroy_x = random.randint(pos_x - 12, pos_x + 12)
-                destroy_y = random.randint(pos_y - 12, pos_y + 12)
-
-                self.image.fill((0, 0, 0, 0),
-                                pygame.Rect(destroy_x - 0.5, destroy_y, 1, 1))
+                destroy_x = randint(pos_x - 12, pos_x + 12)
+                destroy_y = randint(pos_y - 12, pos_y + 12)
+                destroy_rect = pygame.Rect((destroy_x - 0.5, destroy_y, 1, 1))
+                self.image.fill((0, 0, 0, 0), destroy_rect)
 
             self.mask = pygame.mask.from_surface(self.image)

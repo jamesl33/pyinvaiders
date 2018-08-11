@@ -5,53 +5,50 @@ Email: jamesl33info@gmail.com
 Supported Python version: 3.5.2+
 """
 
+from copy import copy
+
 import pygame
 
-from constants import DISPLAY
-from sprite import Sprite
+from animation import Animation
+from constants import BULLET_COLLISION
+from entity import Entity
+from explosion import Explosion
+from sprite_sheet import SpriteSheet
 
 
-class Bullet(Sprite):
-    """A base class for any type of bullet.
+class Bullet(Entity):
+    """Base bullet class which handles movement and removal of bullets.
 
     Arguments:
-        image (pygame.Surface): The image that represents the sprite.
-        position (tuple {int, int}): The x, y position to place the sprite.
-        velocity (pygame.math.Vector2): The x, y velocity of the sprite.
-        groups (pygame.sprite.Group): All the groups this sprite will be in.
+        groups (pygame.sprite.Group): All the groups this entity will be in.
 
     Attributes:
-        dirty (int): Whether or not too redraw the sprite.
-        image (pygame.Surface): The image which represents the bullet.
-        mask (pygame.Mask): The image's mask.
-        rect (pygame.Rect): The image's rect.
-        velocity (pygame.math.Vector2): The x, y velocity of the sprite.
+        dirty (int): Wether or not the sprite should be drawn.
     """
-    def __init__(self, image, position, velocity, *groups):
+    explosion = Animation(SpriteSheet.animation(BULLET_COLLISION, 1), 0.3)
+
+    def __init__(self, *groups):
         super().__init__(*groups)
         self.dirty = 2
-        self.image = image.convert_alpha()
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect()
-        self.velocity = velocity
-
-        self.rect.x, self.rect.y = position
+        self._collision = copy(self.explosion)
 
     def move(self):
-        """Update the bullets position depending on the objects time based
-        variables."""
-        self.rect.y -= int(self.seconds_elapsed * self.velocity.y)
+        """Update the bullets position on the display."""
+        self.rect.y += int(self._seconds_elapsed * self._velocity.y)
 
-        if not self.rect.colliderect(DISPLAY):
-            self.kill()
+    def take_damage(self, bullets, *groups):
+        """Check to see if there are any bullets in contact with each other.
+        If any are destroy them both and create a collision explosion.
 
-    def take_damage(self, bullets):
-        """See if any of the bullets have come in contact with each other."""
+        Arguments:
+            bullets (pygame.sprite.Group): The group of bullets.
+            groups (pygame.sprite.Group): The groups the explosion will be in.
+        """
         for bullet in bullets:
-            if bullet is self:
-                continue
-
-            if pygame.sprite.collide_rect(self, bullet):
-                # TODO - Create a bullet explosion sprite.
+            if bullet is not self and pygame.sprite.collide_rect(self, bullet):
                 bullet.kill()
                 self.kill()
+                Explosion(self._collision,
+                          (self.rect.x - BULLET_COLLISION.width / 2,
+                           self.rect.y - BULLET_COLLISION.height / 2),
+                          *groups)

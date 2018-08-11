@@ -5,48 +5,48 @@ Email: jamesl33info@gmail.com
 Supported Python version: 3.5.2+
 """
 
-from sprite import Sprite
+from entity import Entity
+from animation import Animation
 
 
-class Explosion(Sprite):
-    """Sprite which is some form of explosion. Such as when a ship or tank is
-    hit by a bullet.
+class Explosion(Entity):
+    """A sprite which displays a explosion animation for another sprite. This
+    sprite is commenly creation on the death of another sprite.
 
     Arguments:
         animation (Animation): The animation for the explosion.
-        position (tuple {int, int}): The x, y position to place the sprite.
-        animation_speed (float): How long to wait before progressing a frame.
-        groups (pygame.sprite.Group): All the groups this sprite will be in.
+        position (tuple {int, int}): Where to place the sprite.
 
     Attributes:
-        animation (Animation): The animation for the explosion.
-        image (pygame.Surface): The image representing the sprite.
-        last_frame_time (float): The last time a frame was processed.
-        rect (pygame.Rect): The rect for the image surface.
+        _animation (Animation): The animation for the explosion.
+        _last_frame (float): The time when the last frame was drawn.
+        image (pygame.Surface): The current image which represents the sprite.
+        rect (pygame.Rect): The rect used for placing the sprite.
     """
     def __init__(self, animation, position, *groups):
         super().__init__(*groups)
-        self.animation = animation
-        self.image = self.animation.next()
-        self.last_frame_time = 0
+        self._animation = animation
+        self._last_frame = 0
+        self.image = self._animation.next().convert_alpha()
         self.rect = self.image.get_rect()
 
-        self.rect.x, self.rect.y = position
+        self.rect.topleft = position
 
     def update(self, seconds_elapsed):
-        """Update the animation for the explosion.
+        """Advance the explosions animation depending if its the right time to
+        do so.
 
         Arguments:
-            seconds_elapsed (float): Time since last from was drawn.
+            seconds_elapsed (float): The time since the last frame was drawn.
         """
         super().update(seconds_elapsed)
 
-        if self.last_frame_time - self.current_time <= -self.animation.animation_speed:
-            next_frame = self.animation.next()
+        if abs(self._last_frame - self._current_time) >= self._animation.delay:
+            next_frame = self._animation.next()
 
             if next_frame is None:
                 self.kill()
-
-            self.image = next_frame
-            self.last_frame_time = self.current_time
-            self.dirty = 1
+            else:
+                self.image = next_frame.convert_alpha()
+                self._last_frame = self._current_time
+                self.dirty = 1

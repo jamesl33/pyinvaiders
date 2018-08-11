@@ -7,36 +7,45 @@ Supported Python version: 3.5.2+
 
 
 class Animation():
-    """A simple animation class which allows the manipulation of animations
-    which are loaded into a list of frames.
+    """Make using animations loaded from the sprite sheet easier to use.
 
     Arguments:
         frames (list [pygame.Surface]): The frames that make up the animation.
-        animation_speed (float): The amount of time to wait between each frame.
-        loop (bool): Should the animation loop.
+        delay (float): The amount of time between each frame.
+        loop (bool): If the animation should loop or not.
 
     Attributes:
-        animation_speed (float): The amount of time to wait between each frame.
-        frame (int): The current frame in the frames list.
-        frames (list [pygame.Surface]): The frames that make up the animation.
-        loop (bool): Whether or not this animation is looping.
+        _frames (list [pygame.Surface]): The frames that make up an animation.
+        _delay (float): The time between each frame.
+        _loop (bool): If the animation should loop or not.
+        _current_frame (int): The index of the current frame in _frames.
     """
-    def __init__(self, frames, animation_speed, loop=False):
-        self.animation_speed = animation_speed
-        self.frame = 0
-        self.frames = frames
-        self.loop = loop
+    def __init__(self, frames, delay, loop=False):
+        self._frames = frames
+        self._delay = delay
+        self._loop = loop
+        self._current_frame = 0
+
+    @property
+    def delay(self):
+        """Get the frame delay value for the animation.
+
+        Returns:
+            float: The amount of time between each of the frames.
+        """
+        return self._delay
 
     def next(self):
-        """Get the next frame of the animation."""
-        try:
-            frame = self.frames[self.frame]
-        except IndexError:
-            if self.loop:
-                self.frame = 0
-                frame = self.frames[self.frame]
-            else:
-                frame = None
+        """Get the next frame from the animation.
 
-        self.frame += 1
-        return frame
+        Returns:
+            pygame.Surface: The next sprite frame in the animation.
+        """
+        try:
+            frame = self._frames[self._current_frame]
+            self._current_frame += 1
+            return frame
+        except IndexError:
+            if self._loop:
+                self._current_frame = 0
+                return self.next()
