@@ -32,8 +32,9 @@ class Bullet(Entity):
         self.dirty = 2
         self._collision = copy(self.explosion)
 
-    def move(self):
+    def update(self, seconds_elapsed):
         """Update the bullets position on the display."""
+        super().update(seconds_elapsed)
         self.rect.y += int(self._seconds_elapsed * self._velocity.y)
 
     def take_damage(self, bullets, *groups):
@@ -45,7 +46,7 @@ class Bullet(Entity):
             groups (pygame.sprite.Group): The groups the explosion will be in.
         """
         for bullet in bullets:
-            if bullet is not self and pygame.sprite.collide_rect(self, bullet):
+            if bullet is not self and pygame.sprite.collide_mask(self, bullet):
                 bullet.kill()
                 self.kill()
                 Explosion(self._collision,

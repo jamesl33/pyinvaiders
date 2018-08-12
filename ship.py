@@ -35,6 +35,7 @@ class Ship(Entity):
         type_three (dict): The images and animations for ship type three.
         _ship_type (int): The type of the ship sprite.
         _animation (Animation): The sprites default animation.
+        _explosion (Animation): The sprites explosion animation.
         image (pygame.Surface): The image which represents the sprite.
         rect (pygame.Rect): The rect used to place the sprite.
         mask (pygame.mask.Mask): The mask used for collision detection.
@@ -77,10 +78,13 @@ class Ship(Entity):
 
         if self.type == 1:
             self._animation = copy(self.type_one['ship'])
+            self._explosion = copy(self.type_one['explosion'])
         elif self.type == 2:
             self._animation = copy(self.type_two['ship'])
+            self._explosion = copy(self.type_two['explosion'])
         elif self.type == 3:
             self._animation = copy(self.type_three['ship'])
+            self._explosion = copy(self.type_three['explosion'])
 
         self.image = self._animation.next().convert_alpha()
         self.rect = self.image.get_rect()
@@ -132,13 +136,13 @@ class Ship(Entity):
         for bullet in bullets:
             if pygame.sprite.collide_mask(self, bullet):
                 if self._ship_type == 1:
-                    Explosion(copy(self.type_one['explosion']),
+                    Explosion(self._explosion,
                               (self.rect.x - 10, self.rect.y), *groups)
                 elif self._ship_type == 2:
-                    Explosion(copy(self.type_two['explosion']),
+                    Explosion(self._explosion,
                               (self.rect.x - 4, self.rect.y), *groups)
                 elif self._ship_type == 3:
-                    Explosion(copy(self.type_three['explosion']),
+                    Explosion(self._explosion,
                               (self.rect.x - 2, self.rect.y), *groups)
 
                 bullet.kill()

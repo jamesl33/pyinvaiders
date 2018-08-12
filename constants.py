@@ -38,4 +38,7 @@ TYPE_THREE_BULLET = pygame.Rect(4, 452, 12, 28)
 TYPE_THREE_EXPLOSION = pygame.Rect(4, 284, 52, 32)
 TYPE_THREE_BULLET_EXPLOSION = pygame.Rect(4, 520, 32, 32)
 
+MYSTERY = pygame.Rect(4, 112, 64, 28)
+MYSTERY_EXPLOSION = pygame.Rect(4, 320, 52, 32)
+
 BULLET_COLLISION = pygame.Rect(4, 520, 32, 32)

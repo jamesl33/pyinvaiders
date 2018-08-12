@@ -33,8 +33,9 @@ class SpaceInvaiders():
             'all': pygame.sprite.LayeredDirty(),
             'bullets': pygame.sprite.LayeredDirty(),
             'explosions': pygame.sprite.LayeredDirty(),
+            'mystery': pygame.sprite.LayeredDirty(),
             'shields': pygame.sprite.LayeredDirty(),
-            'ships': pygame.sprite.LayeredDirty(),
+            'ships': pygame.sprite.LayeredDirty()
         }
 
     def start(self):
@@ -102,8 +103,12 @@ class SpaceInvaiders():
                        self._entities['all'],
                        self._entities['bullets'])
 
+        for mystery in self._entities['mystery']:
+            mystery.take_damage(self._entities['bullets'],
+                                self._entities['all'],
+                                self._entities['explosions'])
+
         for bullet in self._entities['bullets']:
-            bullet.move()
             bullet.take_damage(self._entities['bullets'],
                                self._entities['all'],
                                self._entities['explosions'])
