@@ -121,7 +121,7 @@ class Ship(Entity):
             tank (Tank): The tank the ships are shooting at.
             groups (pygame.sprite.Group): The groups the bullet will be in.
         """
-        if self.rect.x >= tank.rect.x - 50 and self.rect.y <= tank.rect.x + 50:
+        if self.rect.x >= tank.rect.x - 50 and self.rect.x <= tank.rect.x + 50:
             if abs(self._last_shot - self._current_time) >= self._reload_speed:
                 ShipBullet(self, *groups)
                 self._last_shot = self._current_time
