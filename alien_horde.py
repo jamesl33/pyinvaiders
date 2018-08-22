@@ -5,12 +5,13 @@ Email: jamesl33info@gmail.com
 Supported Python version: 3.5.2+
 """
 
-from random import sample
+from random import sample, randint
 
 from alien_horde_layer import AlienHordeLayer
 from constants import DISPLAY, HORDE_WIDTH, HORDE_BUFFER, TYPE_ONE, TYPE_TWO, \
                       TYPE_THREE
 from ship import Ship
+from mystery import Mystery
 
 
 class AlienHorde():
@@ -40,6 +41,9 @@ class AlienHorde():
         self._shooting_delay = 0.5
         self._last_shots = 0
         self._last_move = 0
+        self._last_mystery = 0
+        self._mystery_time = randint(10, 30)
+        self._ship_groups = groups
 
         for _ in range(5):
             self._layers.append(AlienHordeLayer())
@@ -53,11 +57,11 @@ class AlienHorde():
         step = TYPE_THREE.width + ship_gap
 
         for pos_x in range(start + HORDE_BUFFER, end - HORDE_BUFFER, step):
-            self._layers[0].append(Ship(1, (int(pos_x + (TYPE_THREE.width / 2) - (TYPE_ONE.width / 2)), height), *groups))
-            self._layers[1].append(Ship(2, (int(pos_x + (TYPE_THREE.width / 2) - (TYPE_TWO.width / 2)), height + 50), *groups))
-            self._layers[2].append(Ship(2, (int(pos_x + (TYPE_THREE.width / 2) - (TYPE_TWO.width / 2)), height + 100), *groups))
-            self._layers[3].append(Ship(3, (pos_x, height + 150), *groups))
-            self._layers[4].append(Ship(3, (pos_x, height + 200), *groups))
+            self._layers[0].append(Ship(1, (int(pos_x + (TYPE_THREE.width / 2) - (TYPE_ONE.width / 2)), height), self._ship_groups))
+            self._layers[1].append(Ship(2, (int(pos_x + (TYPE_THREE.width / 2) - (TYPE_TWO.width / 2)), height + 50), self._ship_groups))
+            self._layers[2].append(Ship(2, (int(pos_x + (TYPE_THREE.width / 2) - (TYPE_TWO.width / 2)), height + 100), self._ship_groups))
+            self._layers[3].append(Ship(3, (pos_x, height + 150), self._ship_groups))
+            self._layers[4].append(Ship(3, (pos_x, height + 200), self._ship_groups))
 
         self._ship_count = Ship.num_ships
 
@@ -81,6 +85,10 @@ class AlienHorde():
         if ship_count < self._ship_count:
             self._speed_multiplier += (self._ship_count - ship_count) / 250
             self._ship_count = ship_count
+
+        if abs(self._last_mystery - self._current_time) >= self._mystery_time:
+            Mystery(randint(0, 1), self._ship_groups)
+            self._last_mystery = self._current_time
 
     def move(self):
         """Move the ships one layer at a time. The speed that they move will

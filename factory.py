@@ -63,4 +63,4 @@ class Factory():
         Returns:
             AlienHorde: The alien horde which was created.
         """
-        return AlienHorde(50, *groups)
+        return AlienHorde(75, *groups)
