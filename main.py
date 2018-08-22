@@ -9,9 +9,8 @@ Supported Python version: 3.5.2+
 
 import pygame
 
-from constants import FPS, DISPLAY, BACKGROUND, TANK, SHIELD, NUM_SHIELDS
-from shield import Shield
-from tank import Tank
+from constants import FPS, DISPLAY, BACKGROUND
+from factory import Factory
 
 
 class SpaceInvaiders():
@@ -22,6 +21,8 @@ class SpaceInvaiders():
         _background (pygame.Surface): The games background surface.
         _clock (pygame.time.Clock): The games main clock.
         _tank (Tank): The tank the user controls.
+        _shields (list [Shield]): The shields which defend the user.
+        _alien_horde (AlienHorde): The alien horde which the user fights.
         _entities (dict {pygame.sprite.Group}): The groups of entities.
     """
     def __init__(self):
@@ -29,13 +30,18 @@ class SpaceInvaiders():
         self._background = pygame.Surface(BACKGROUND.size)
         self._clock = pygame.time.Clock()
         self._tank = None
+        self._shields = None
+        self._alien_horde = None
         self._entities = {
             'all': pygame.sprite.LayeredDirty(),
             'bullets': pygame.sprite.LayeredDirty(),
             'explosions': pygame.sprite.LayeredDirty(),
             'mystery': pygame.sprite.LayeredDirty(),
             'shields': pygame.sprite.LayeredDirty(),
-            'ships': pygame.sprite.LayeredDirty()
+            'ship_bullets': pygame.sprite.LayeredDirty(),
+            'ships': pygame.sprite.LayeredDirty(),
+            'tank_bullets': pygame.sprite.LayeredDirty(),
+            'tanks': pygame.sprite.LayeredDirty()
         }
 
     def start(self):
@@ -50,23 +56,12 @@ class SpaceInvaiders():
         for _, sprite_group in self._entities.items():
             sprite_group.empty()
 
-        tank_x = DISPLAY.width / 2 - TANK.width / 2
-        tank_y = (DISPLAY.height) - TANK.height
-
-        self._tank = Tank((tank_x, tank_y), self._entities['all'])
-
-        shield_gap = int((DISPLAY.width - NUM_SHIELDS * SHIELD.width) /
-                         (NUM_SHIELDS + 1))
-        shield_height = DISPLAY.height - (SHIELD.height * 2)
-
-        start = shield_gap
-        end = DISPLAY.width - SHIELD.width
-        step = SHIELD.width + shield_gap
-
-        for pos_x in range(start, end, step):
-            Shield((pos_x, shield_height),
-                   self._entities['all'],
-                   self._entities['shields'])
+        self._tank = Factory.create_tank(self._entities['all'],
+                                         self._entities['tanks'])
+        self._shields = Factory.create_shields(self._entities['all'],
+                                               self._entities['shields'])
+        self._alien_horde = Factory.create_horde(self._entities['all'],
+                                                 self._entities['ships'])
 
     def _update(self):
         """Update the game by one frame."""
@@ -87,24 +82,29 @@ class SpaceInvaiders():
         """
         self._entities['all'].update(seconds_elapsed)
 
-        self._tank.take_damage(self._entities['bullets'],
+        self._alien_horde.update(seconds_elapsed)
+
+        self._tank.take_damage(self._entities['ship_bullets'],
                                self._entities['all'],
                                self._entities['explosions'])
+
+        self._alien_horde.move()
+
+        self._alien_horde.shoot(self._tank,
+                                self._entities['all'],
+                                self._entities['bullets'],
+                                self._entities['ship_bullets'])
 
         for sheild in self._entities['shields']:
             sheild.take_damage(self._entities['bullets'])
 
         for ship in self._entities['ships']:
-            ship.take_damage(self._entities['bullets'],
+            ship.take_damage(self._entities['tank_bullets'],
                              self._entities['all'],
                              self._entities['explosions'])
 
-            ship.shoot(self._tank,
-                       self._entities['all'],
-                       self._entities['bullets'])
-
         for mystery in self._entities['mystery']:
-            mystery.take_damage(self._entities['bullets'],
+            mystery.take_damage(self._entities['tank_bullets'],
                                 self._entities['all'],
                                 self._entities['explosions'])
 
@@ -123,11 +123,15 @@ class SpaceInvaiders():
             if event.type == pygame.QUIT:
                 exit()
 
+        if keys[pygame.K_LCTRL] and keys[pygame.K_r]:
+            self.restart()
+
         self._tank.move(keys[pygame.K_RIGHT] - keys[pygame.K_LEFT])
 
         if keys[pygame.K_UP]:
             self._tank.shoot(self._entities['all'],
-                             self._entities['bullets'])
+                             self._entities['bullets'],
+                             self._entities['tank_bullets'])
 
     @classmethod
     def _draw_entities(cls, dirty_rects):

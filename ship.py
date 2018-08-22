@@ -11,10 +11,9 @@ import pygame
 
 from animation import Animation
 from constants import TYPE_ONE, TYPE_ONE_BULLET, TYPE_ONE_EXPLOSION, \
-                      TYPE_ONE_BULLET_EXPLOSION, TYPE_TWO, TYPE_TWO_BULLET, \
-                      TYPE_TWO_EXPLOSION, TYPE_TWO_BULLET_EXPLOSION, \
+                      TYPE_TWO, TYPE_TWO_BULLET, TYPE_TWO_EXPLOSION, \
                       TYPE_THREE, TYPE_THREE_BULLET, TYPE_THREE_EXPLOSION, \
-                      TYPE_THREE_BULLET_EXPLOSION
+                      SHIP_BULLET_EXPLOSION
 from entity import Entity
 from explosion import Explosion
 from sprite_sheet import SpriteSheet
@@ -30,6 +29,7 @@ class Ship(Entity):
         groups (pygame.sprite.Group): The groups the ship sprite will be in.
 
     Attributes:
+        num_ships (int): The number of ship objects.
         type_one (dict): The images and animations for ship type one.
         type_two (dict): The images and animations for ship type two.
         type_three (dict): The images and animations for ship type three.
@@ -42,6 +42,8 @@ class Ship(Entity):
         _last_frame (float): The last time the animation was updated.
         _last_shot (float): The last time a shot was fired.
     """
+    num_ships = 0
+
     type_one = {
         'ship': Animation(SpriteSheet.animation(TYPE_ONE, 2), 1, loop=True),
         'bullet': Animation(
@@ -49,7 +51,7 @@ class Ship(Entity):
         'explosion': Animation(
             SpriteSheet.animation(TYPE_ONE_EXPLOSION, 1), 0.3),
         'bullet_explosion': Animation(
-            SpriteSheet.animation(TYPE_ONE_BULLET_EXPLOSION, 1), 0.3)
+            SpriteSheet.animation(SHIP_BULLET_EXPLOSION, 1), 0.3)
     }
 
     type_two = {
@@ -59,7 +61,7 @@ class Ship(Entity):
         'explosion': Animation(
             SpriteSheet.animation(TYPE_TWO_EXPLOSION, 1), 0.3),
         'bullet_explosion': Animation(
-            SpriteSheet.animation(TYPE_TWO_BULLET_EXPLOSION, 1), 0.3)
+            SpriteSheet.animation(SHIP_BULLET_EXPLOSION, 1), 0.3)
     }
 
     type_three = {
@@ -69,11 +71,12 @@ class Ship(Entity):
         'explosion': Animation(
             SpriteSheet.animation(TYPE_THREE_EXPLOSION, 1), 0.3),
         'bullet_explosion': Animation(
-            SpriteSheet.animation(TYPE_THREE_BULLET_EXPLOSION, 1), 0.3)
+            SpriteSheet.animation(SHIP_BULLET_EXPLOSION, 1), 0.3)
     }
 
     def __init__(self, ship_type, position, *groups):
         super().__init__(*groups)
+        self.__class__.num_ships += 1
         self._ship_type = ship_type
 
         if self.type == 1:
@@ -89,9 +92,9 @@ class Ship(Entity):
         self.image = self._animation.next().convert_alpha()
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self._last_shot = 0
         self._last_frame = 0
         self._reload_speed = 5
+        self._last_shot = -(self._reload_speed / 2)
 
         self.rect.topleft = position
 
@@ -147,3 +150,8 @@ class Ship(Entity):
 
                 bullet.kill()
                 self.kill()
+
+    def kill(self):
+        """Remove the sprite from all groups and decriment the ship counter."""
+        super().kill()
+        self.__class__.num_ships -= 1

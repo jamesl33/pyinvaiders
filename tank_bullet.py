@@ -10,7 +10,7 @@ from copy import copy
 import pygame
 
 from bullet import Bullet
-from constants import TANK_BULLET, TANK_BULLET_EXPLOSION
+from constants import TANK_BULLET, TANK_BULLET_EXPLOSION, TANK_BULLET_VECOLCITY
 from explosion import Explosion
 
 
@@ -34,7 +34,7 @@ class TankBullet(Bullet):
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self._explosion = copy(tank.bullet_explosion)
-        self._velocity = pygame.math.Vector2(0, -750)
+        self._velocity = TANK_BULLET_VECOLCITY
 
         self.rect.x = tank.rect.x + tank.rect.width / 2 - TANK_BULLET.width / 2
         self.rect.y = tank.rect.y - TANK_BULLET.height

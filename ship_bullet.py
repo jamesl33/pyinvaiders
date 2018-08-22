@@ -9,7 +9,7 @@ from copy import copy
 
 import pygame
 
-from constants import DISPLAY, TYPE_ONE_BULLET, TYPE_ONE_BULLET_EXPLOSION
+from constants import DISPLAY, SHIP_BULLET_VECOLCITY, SHIP_BULLET_EXPLOSION
 from bullet import Bullet
 from explosion import Explosion
 
@@ -48,7 +48,7 @@ class ShipBullet(Bullet):
         self.image = self._animation.next().convert_alpha()
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self._velocity = pygame.math.Vector2(0, 750)
+        self._velocity = SHIP_BULLET_VECOLCITY
         self._last_frame = 0
 
         self.rect.x = ship.rect.x + ship.rect.width / 2 - self.rect.width / 2
@@ -85,6 +85,6 @@ class ShipBullet(Bullet):
         if self.rect.y >= DISPLAY.height:
             self.kill()
             Explosion(self._explosion,
-                      (self.rect.x - TYPE_ONE_BULLET_EXPLOSION.width / 2,
-                       DISPLAY.height - TYPE_ONE_BULLET_EXPLOSION.height),
+                      (self.rect.x - SHIP_BULLET_EXPLOSION.width / 2,
+                       DISPLAY.height - SHIP_BULLET_EXPLOSION.height),
                       *groups)
