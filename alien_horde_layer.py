@@ -7,6 +7,7 @@ Supported Python version: 3.5.2+
 
 import pygame
 
+from ship import Ship
 from constants import DISPLAY, HORDE_WIDTH, TYPE_ONE, TYPE_TWO, TYPE_THREE
 
 
@@ -75,13 +76,22 @@ class AlienHordeLayer():
         elif self._ships[0].type == 3:
             ship_buffer = TYPE_THREE.width / 2
 
-        for ship in self._ships:
-            if ship.rect.left <= 0 + ship_buffer:
-                self._velocity.x = abs(self._velocity.x)
-                self._velocity.y = 20
-            elif ship.rect.right >= DISPLAY.width - ship_buffer:
-                self._velocity.x = -self._velocity.x
-                self._velocity.y = 20
+        if Ship.num_ships != 1:
+            for ship in self._ships:
+                if ship.rect.left <= 0 + ship_buffer:
+                    self._velocity.x = abs(self._velocity.x)
+                    self._velocity.y = 20
+                elif ship.rect.right >= DISPLAY.width - ship_buffer:
+                    self._velocity.x = -self._velocity.x
+                    self._velocity.y = 20
+        else:
+            for ship in [ship for ship in self._ships if ship.alive()]:
+                if ship.rect.left <= 0 + ship_buffer:
+                    self._velocity.x = abs(self._velocity.x)
+                    self._velocity.y = 20
+                elif ship.rect.right >= DISPLAY.width - ship_buffer:
+                    self._velocity.x = -self._velocity.x
+                    self._velocity.y = 20
 
         for ship in self._ships:
             ship.rect.x += self._velocity.x
