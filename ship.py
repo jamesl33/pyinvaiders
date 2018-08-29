@@ -1,8 +1,22 @@
 #!/usr/bin/python3
 """
-Author: James Lee
-Email: jamesl33info@gmail.com
-Supported Python version: 3.5.2+
+This file is part of pyinvaiders.
+
+Copyright (C) 2018, James Lee <jamesl33info@gmail.com>.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
 
 from copy import copy
@@ -10,10 +24,10 @@ from copy import copy
 import pygame
 
 from animation import Animation
-from constants import TYPE_ONE, TYPE_ONE_BULLET, TYPE_ONE_EXPLOSION, \
-                      TYPE_TWO, TYPE_TWO_BULLET, TYPE_TWO_EXPLOSION, \
-                      TYPE_THREE, TYPE_THREE_BULLET, TYPE_THREE_EXPLOSION, \
-                      SHIP_BULLET_EXPLOSION
+from constants import (TYPE_ONE, TYPE_ONE_BULLET, TYPE_ONE_EXPLOSION, TYPE_TWO,
+                       TYPE_TWO_BULLET, TYPE_TWO_EXPLOSION, TYPE_THREE,
+                       TYPE_THREE_BULLET, TYPE_THREE_EXPLOSION,
+                       SHIP_BULLET_EXPLOSION)
 from entity import Entity
 from explosion import Explosion
 from sprite_sheet import SpriteSheet
@@ -21,7 +35,7 @@ from ship_bullet import ShipBullet
 
 
 class Ship(Entity):
-    """
+    """The different types of ships that the user has to fight against.
 
     Arguments:
         ship_type (int): Which type of ship to create.

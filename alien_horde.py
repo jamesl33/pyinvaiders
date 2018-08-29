@@ -1,15 +1,29 @@
 #!/usr/bin/python3
 """
-Author: James Lee
-Email: jamesl33info@gmail.com
-Supported Python version: 3.5.2+
+This file is part of pyinvaiders.
+
+Copyright (C) 2018, James Lee <jamesl33info@gmail.com>.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 """
 
 from random import sample, randint
 
 from alien_horde_layer import AlienHordeLayer
-from constants import DISPLAY, HORDE_WIDTH, HORDE_BUFFER, TYPE_ONE, TYPE_TWO, \
-                      TYPE_THREE
+from constants import (DISPLAY, HORDE_WIDTH, HORDE_BUFFER, TYPE_ONE, TYPE_TWO,
+                       TYPE_THREE)
 from ship import Ship
 from mystery import Mystery
 
